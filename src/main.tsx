@@ -1,13 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
-import { Global } from '@emotion/react';
-import { globalStyle } from './styles';
-// import './index.css'
+import { Global, ThemeProvider } from '@emotion/react';
+import { globalStyle, theme } from './styles';
+import { ApolloProvider } from '@apollo/client';
+import client from '~/configs/graphql';
+import { RouterProvider } from 'react-router-dom';
+import router from '~/routers';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <Global styles={globalStyle} />
-    <App />
+    <ThemeProvider theme={theme}>
+      <ApolloProvider client={client}>
+        <RouterProvider router={router} />
+      </ApolloProvider>
+    </ThemeProvider>
   </React.StrictMode>
 );
