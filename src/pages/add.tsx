@@ -5,13 +5,19 @@ import { Button } from '~/components/common';
 import useHeader from '~/hooks/useHeader';
 import useReactive from 'react-use-reactive';
 import { useMutation } from '@apollo/client';
-import { POST_CONTACT_WITH_PHONE } from '~/services';
+import { GET_CONTACTS, POST_CONTACT_WITH_PHONE } from '~/services';
 import { useNavigate } from 'react-router-dom';
 
 const Add = () => {
   const navigate = useNavigate();
   const [addContact, { data: res, loading, error }] = useMutation(
-    POST_CONTACT_WITH_PHONE
+    POST_CONTACT_WITH_PHONE,
+    {
+      refetchQueries: ['res'],
+      update: (cache, res) => {
+        console.log('cache data', cache);
+      },
+    }
   );
   const { setHeaderContent } = useHeader();
   const data = useReactive({

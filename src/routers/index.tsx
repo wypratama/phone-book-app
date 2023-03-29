@@ -18,6 +18,7 @@ for (const file in modules) {
       element: <El />,
       path: path === '' ? '/' : path,
       loader: mod.loader || undefined,
+      action: mod.action || undefined,
     });
   });
 }
