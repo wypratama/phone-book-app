@@ -1,6 +1,29 @@
-import { Outlet } from 'react-router-dom';
-import Container from '~/components/common/Container';
-import styled from '@emotion/styled';
+import { Outlet } from "react-router-dom";
+import Container from "~/components/common/Container";
+import styled from "@emotion/styled";
+import useHeader from "~/hooks/useHeader";
+
+const LayoutDefault = () => {
+	const { headerContent: Header } = useHeader();
+	return (
+		<BaseLayout>
+			<Container>
+				<LayoutHeader>{Header}</LayoutHeader>
+			</Container>
+			<div
+				css={(theme) => ({
+					background: theme.colors.background,
+					width: "100%",
+					height: "100%",
+					borderRadius: "10px 10px 0 0",
+					padding: "16px",
+				})}
+			>
+				<Outlet />
+			</div>
+		</BaseLayout>
+	);
+};
 
 const BaseLayout = styled.div`
   ${(props) => `
@@ -8,39 +31,14 @@ const BaseLayout = styled.div`
   flex-direction: column;
   width: 100%;
   height: 100svh;
-  background: darken(${props.theme.colors.background}, 70%);
+  background: ${props.theme.colors.nord0};
   `}
 `;
 
-const LayoutDefault = () => {
-  return (
-    <BaseLayout>
-      <Container>
-        <div
-          css={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            paddingTop: '50px',
-            paddingBottom: '50px',
-          }}
-        >
-          <h1>Contact</h1>
-        </div>
-      </Container>
-      <div
-        css={(theme) => ({
-          background: theme.colors.background,
-          width: '100%',
-          height: '100%',
-          borderRadius: '10px 10px 0 0',
-          padding: '16px',
-        })}
-      >
-        <Outlet />
-      </div>
-    </BaseLayout>
-  );
-};
+const LayoutHeader = styled.header`
+  ${({ theme }) => `
+    
+  `}
+`;
 
 export default LayoutDefault;

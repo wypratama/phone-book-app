@@ -1,18 +1,35 @@
 const theme = {
   colors: {
-    primary: '#000022', // Oxford Blue
-    secondary: '#e28413', // Fulvous
-    background: '#fbf5f3', // Snow
+    primary: '#81A1C1',
+    secondary: '#D08770',
+    background: '#ECEFF4',
     text: {
-      primary: '#000022', // Oxford Blue
-      secondary: '#757575', // Gray (unchanged)
+      primary: '#2E3440',
+      secondary: '#4C566A',
     },
-    success: '#c42847', // Cardinal
-    error: '#de3c4b', // Rusty Red
-    accent: '#e28413', // Fulvous (can be changed if desired)
+    success: '#A3BE8C',
+    error: '#BF616A',
+    accent: '#88C0D0',
+    // Additional Nord theme colors
+    nord0: '#2E3440',
+    nord1: '#3B4252',
+    nord2: '#434C5E',
+    nord3: '#4C566A',
+    nord4: '#D8DEE9',
+    nord5: '#E5E9F0',
+    nord6: '#ECEFF4',
+    nord7: '#8FBCBB',
+    nord8: '#88C0D0',
+    nord9: '#81A1C1',
+    nord10: '#5E81AC',
+    nord11: '#BF616A',
+    nord12: '#D08770',
+    nord13: '#EBCB8B',
+    nord14: '#A3BE8C',
+    nord15: '#B48EAD',
   },
   typography: {
-    fontFamily: "'Roboto', sans-serif",
+    fontFamily: "'Inter', sans-serif",
     fontSize: {
       base: '16px',
       small: '14px',
@@ -28,7 +45,10 @@ const theme = {
     large: '1.5rem',
   },
   borderRadius: {
-    base: '4px',
+    small: '4px',
+    medium: '8px',
+    base: '16px',
+    large: '32px',
   },
   breakpoints: {
     xs: 0,
@@ -45,7 +65,7 @@ const theme = {
     xl: '1140px',
     xxl: '1320px',
   },
-};
+} as const;
 
 export default theme;
 export type AppTheme = typeof theme;

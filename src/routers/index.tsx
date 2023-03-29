@@ -1,5 +1,6 @@
 import { createBrowserRouter, RouteObject } from 'react-router-dom';
 import DefaultLayout from '~/layouts/default';
+import { HeaderProvider } from '~/hooks/useHeader';
 
 const modules = import.meta.glob('/src/pages/**/*.{tsx,jsx}');
 

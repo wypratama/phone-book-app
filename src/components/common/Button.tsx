@@ -1,17 +1,23 @@
 import styled from '@emotion/styled';
+import { AppTheme } from '~/styles/theme';
 
 interface Props {
-  color: 'primary' | 'secondary';
+  color: keyof AppTheme['colors'];
+  fullWidth?: boolean;
+  outlined?: boolean;
 }
 
 const Button = styled.button<Props>`
-  ${(props) => `
-  background-color: ${props.theme.colors[props.color]};
-  color: ${props.theme.colors.background};
-  font-family: ${props.theme.typography.fontFamily};
-  font-size: ${props.theme.typography.fontSize.base};
-  padding: ${props.theme.spacing.small} ${props.theme.spacing.base};
-  border-radius: ${props.theme.borderRadius.base};
+  ${({ theme, color, fullWidth, outlined }) => `
+  background-color: ${outlined ? 'transparent' : theme.colors[color]};
+  color: ${outlined ? theme.colors[color] : theme.colors.background};
+  font-family: ${theme.typography.fontFamily};
+  font-size: ${theme.typography.fontSize.base};
+  font-weight: 500;
+  padding: ${theme.spacing.small} ${theme.spacing.base};
+  border-radius: ${theme.borderRadius.base};
+  border: ${theme.colors[color]} 1.5px solid;
+  ${fullWidth && 'width: 100%;'}
   `}
 `;
 
