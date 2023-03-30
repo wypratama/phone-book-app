@@ -1,4 +1,5 @@
-import styled from "@emotion/styled";
+import styled from '@emotion/styled';
+import Icon from './Icon';
 
 const SearchContainer = styled.div`
   ${({ theme }) => `
@@ -12,7 +13,7 @@ const SearchContainer = styled.div`
 const StyledSearch = styled.input`
   ${({ theme }) => `
     width: 100%;
-    padding:${theme.spacing.small} ${theme.spacing.base};
+    padding:${theme.spacing.base} ${theme.spacing.base};
     border-radius: ${theme.borderRadius.large};
     outline: none;
     border: none;
@@ -20,11 +21,24 @@ const StyledSearch = styled.input`
   `}
 `;
 
+const SearchWrapper = styled.div`
+  position: relative;
+  width: 100%;
+`;
+
+const SearchIcon = styled(Icon)`
+  position: absolute;
+  top: 0;
+`;
+
 const SearchInput = () => {
-	return (
-		<SearchContainer>
-			<StyledSearch type='search' placeholder='Search Contact' />;
-		</SearchContainer>
-	);
+  return (
+    <SearchContainer>
+      <SearchWrapper>
+        <StyledSearch type='search' placeholder='Search Contact' />
+        <SearchIcon>search</SearchIcon>
+      </SearchWrapper>
+    </SearchContainer>
+  );
 };
 export default SearchInput;

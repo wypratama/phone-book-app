@@ -5,7 +5,6 @@ import useHeader from '~/hooks/useHeader';
 import useIndexedDB from '~/hooks/useIndexedDb';
 
 const LayoutDefault = () => {
-  // const { add } = useIndexedDB('phonebook', 'favorite');
   const { headerContent: Header } = useHeader();
   return (
     <BaseLayout>
