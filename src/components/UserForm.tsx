@@ -1,5 +1,5 @@
 import { Contact } from '~/types/models.interface';
-import { Button, Input } from './common';
+import { Button, Icon, Input } from './common';
 import styled from '@emotion/styled';
 
 type Props = {
@@ -28,14 +28,27 @@ const UserForm = ({ data }: Props) => {
 
       {data.phones.map((phone, key) => (
         // rome-ignore lint/suspicious/noArrayIndexKey: <no unique property, useId hook is non-option due to dynamic render>
-        <div key={key}>
+        <PhoneWrapper key={key}>
           <Input
             name={`phone_number_${key}`}
             label={key ? `Additional Phone Number ${key}` : 'Phone Number'}
             value={phone.number}
             onChange={(e) => (phone.number = e.target.value)}
           />
-        </div>
+          <Button
+            type='button'
+            color='nord1'
+            onClick={() => {
+              if (data.phones.length > 1) {
+                data.phones.splice(key, 1);
+              } else {
+                alert('need to have at least one number');
+              }
+            }}
+          >
+            <Icon>remove</Icon>
+          </Button>
+        </PhoneWrapper>
       ))}
 
       <Button type='button' color='nord1' outlined onClick={onAddNumber}>
@@ -49,6 +62,23 @@ const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.base};
+`;
+
+const PhoneWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: ${({ theme }) => theme.spacing.small};
+  align-items: flex-end;
+
+  & div {
+    flex: 1;
+  }
+
+  button {
+    border-radius: 4px;
+    padding: 8px;
+    aspect-ratio: 2/1;
+  }
 `;
 
 export default UserForm;

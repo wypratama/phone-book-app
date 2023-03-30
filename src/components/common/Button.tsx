@@ -6,17 +6,18 @@ interface Props {
   fullWidth?: boolean;
   outlined?: boolean;
   ghost?: boolean;
+  circle?: boolean;
 }
 
 const Button = styled.button<Props>`
-  ${({ theme, color, fullWidth, outlined, ghost }) => `
+  ${({ theme, color, fullWidth, outlined, ghost, circle }) => `
   background-color: ${outlined || ghost ? 'transparent' : theme.colors[color]};
   color: ${outlined || ghost ? theme.colors[color] : theme.colors.background};
   font-family: ${theme.typography.fontFamily};
   font-size: ${theme.typography.fontSize.base};
   font-weight: 500;
   padding: ${theme.spacing.small} ${theme.spacing.base};
-  border-radius: ${theme.borderRadius.base};
+  border-radius:   ${circle ? '50%' : theme.borderRadius.base};
   border: ${ghost ? 'transparent' : theme.colors[color]} 1.5px solid;
   ${fullWidth && 'width: 100%;'}
   `}

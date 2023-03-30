@@ -14,9 +14,10 @@ import { GET_CONTACTS } from '~/services';
 import CardContact from '~/components/CardContact';
 import styled from '@emotion/styled';
 import useHeader from '~/hooks/useHeader';
-import { SearchInput, FloatingButton, Button } from '~/components/common';
+import { SearchInput, FloatingButton, Button, Icon } from '~/components/common';
 import useInfiniteScroll from '~/hooks/useInfiniteScroll';
 import useReactive from 'react-use-reactive';
+import useIndexedDB from '~/hooks/useIndexedDb';
 
 const List = styled.div`
   display: flex;
@@ -26,6 +27,7 @@ const List = styled.div`
 
 const ContactList = () => {
   const navigate = useNavigate();
+  // const { addData, isReady: isDbReady } = useIndexedDB('phoneBook', 'contacts');
   const { setHeaderContent } = useHeader();
   const vouchers = useReactive<{ list: Contact[]; offset: number }>({
     list: [],
@@ -35,17 +37,9 @@ const ContactList = () => {
   // const nexData = useActionData() as LoaderData<typeof action>;
   const [clicked, setClicked] = useState(false);
 
-  let submit = useSubmit();
+  // let submit = useSubmit();
 
   const loadMore = async () => {
-    // await submit(
-    //   { offset: (vouchers.offset += 10).toString() },
-    //   {
-    //     method: 'put',
-    //     action: '/',
-    //   }
-    // );
-    // vouchers.offset = vouchers.offset + 10;
     navigate('/', {
       replace: true,
       state: { offset: (vouchers.offset += 10) },
@@ -65,12 +59,22 @@ const ContactList = () => {
     setHeaderContent(<SearchInput />);
   }, []);
 
+  // useEffect(() => {
+  //   if (isDbReady) {
+  //     console.log('called');
+  //     addData(data.data.contact);
+  //   }
+  // }, [isDbReady]);
+
   useEffect(() => {
     if (data?.data?.contact) {
       vouchers.list = [
         ...vouchers.list,
         ...JSON.parse(JSON.stringify(data.data.contact)),
       ];
+      // setTimeout(() => {
+      //   addData(data.data.contact[0]);
+      // }, 3000);
     }
   }, [data.data.contact]);
 
@@ -115,7 +119,7 @@ const ContactList = () => {
         load more
       </Button>
       <FloatingButton clicked={clicked} onClick={handleClick}>
-        <span className='material-icons'>add</span>
+        <Icon>add</Icon>
       </FloatingButton>
     </>
   );

@@ -11,13 +11,7 @@ import { useNavigate } from 'react-router-dom';
 const Add = () => {
   const navigate = useNavigate();
   const [addContact, { data: res, loading, error }] = useMutation(
-    POST_CONTACT_WITH_PHONE,
-    {
-      refetchQueries: ['res'],
-      update: (cache, res) => {
-        console.log('cache data', cache);
-      },
-    }
+    POST_CONTACT_WITH_PHONE
   );
   const { setHeaderContent } = useHeader();
   const data = useReactive({
@@ -28,7 +22,14 @@ const Add = () => {
 
   const onSaveContact = async () => {
     try {
-      await addContact({ variables: data });
+      await addContact({
+        variables: data,
+        refetchQueries: [
+          {
+            query: GET_CONTACTS,
+          },
+        ],
+      });
       console.log(res);
       navigate('/');
     } catch (error) {}
