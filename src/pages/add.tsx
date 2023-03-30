@@ -10,9 +10,7 @@ import { useNavigate } from 'react-router-dom';
 
 const Add = () => {
   const navigate = useNavigate();
-  const [addContact, { data: res, loading, error }] = useMutation(
-    POST_CONTACT_WITH_PHONE
-  );
+  const [addContact, { loading, error }] = useMutation(POST_CONTACT_WITH_PHONE);
   const { setHeaderContent } = useHeader();
   const data = useReactive({
     first_name: '',
@@ -30,7 +28,6 @@ const Add = () => {
           },
         ],
       });
-      console.log(res);
       navigate('/');
     } catch (error) {}
   };
@@ -47,7 +44,11 @@ const Add = () => {
     <FormContainer>
       <UserForm data={data} />
       <FormFooter>
-        <Button color='secondary' fullWidth>
+        <Button
+          color='secondary'
+          fullWidth
+          onClick={() => navigate('/', { replace: true })}
+        >
           Cancel
         </Button>
         <Button color='primary' fullWidth onClick={onSaveContact}>

@@ -66,7 +66,7 @@ const Edit = () => {
       <Header>
         <Avatar contact={contact} size={100} />
         <h2>
-          {contact.first_name} {contact.last_name}
+          Editing {contact.first_name} {contact.last_name}
         </h2>
       </Header>
     );
@@ -76,7 +76,13 @@ const Edit = () => {
     <FormContainer>
       <UserForm data={input} />
       <FormFooter>
-        <Button color='secondary' fullWidth>
+        <Button
+          color='secondary'
+          fullWidth
+          onClick={() => {
+            navigate(`/${contact.id}`, { replace: true });
+          }}
+        >
           Cancel
         </Button>
         <Button color='primary' fullWidth onClick={onUpdate}>
