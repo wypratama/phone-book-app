@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import { useLayoutEffect } from 'react';
 import { LoaderFunction, useLoaderData, useNavigate } from 'react-router-dom';
 import UserForm from '~/components/UserForm';
-import { Avatar, Button } from '~/components/common';
+import { Avatar, BackButton, Button } from '~/components/common';
 import client from '~/configs/graphql';
 import useHeader from '~/hooks/useHeader';
 import {
@@ -44,18 +44,6 @@ const Edit = () => {
         refetchQueries: ['GetContactDetail'],
         fetchPolicy: 'no-cache',
       });
-
-      // contact.phones.forEach(({ number }, i) => {
-      //   updatePhoneNumber({
-      //     variables: {
-      //       pk_columns: {
-      //         number: number,
-      //         contact_id: contact.id,
-      //       },
-      //       new_phone_number: input.phones[i].number,
-      //     },
-      //   });
-      // });
 
       //delete number if any
       console.log('bandingkan', contact.phones, input.phones);
@@ -121,6 +109,13 @@ const Edit = () => {
         <h2>
           Editing {contact.first_name} {contact.last_name}
         </h2>
+        <IconBack
+          onClick={() => {
+            navigate(-1);
+          }}
+        >
+          arrow_back_ios
+        </IconBack>
       </Header>
     );
   }, []);
@@ -159,6 +154,7 @@ const FormFooter = styled.div`
   display: flex;
   flex-direction: row;
   gap: ${({ theme }) => theme.spacing.small};
+  margin-bottom: ${({ theme }) => theme.spacing.large};
 `;
 
 const Header = styled.div`
@@ -169,6 +165,11 @@ const Header = styled.div`
   padding: ${({ theme }) => theme.spacing.base};
   color: ${({ theme }) => theme.colors.accent};
   gap: ${({ theme }) => theme.spacing.small};
+`;
+
+const IconBack = styled(BackButton)`
+  left: ${({ theme }) => theme.spacing.large};
+  top: ${({ theme }) => theme.spacing.large};
 `;
 
 export const loader = (async ({ params, request }) => {
