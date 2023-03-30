@@ -1,5 +1,10 @@
-import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
-import client from '~/configs/graphql';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   LoaderFunction,
   useLoaderData,
@@ -8,6 +13,7 @@ import {
   useSubmit,
   useActionData,
 } from 'react-router-dom';
+import client from '~/configs/graphql';
 import { Contact } from '~/types/models.interface';
 import { LoaderData } from '~/types/common.type';
 import { GET_CONTACTS } from '~/services';
@@ -19,34 +25,34 @@ import useInfiniteScroll from '~/hooks/useInfiniteScroll';
 import useReactive from 'react-use-reactive';
 import useIndexedDB from '~/hooks/useIndexedDb';
 
-const List = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`;
-
 const ContactList = () => {
   const navigate = useNavigate();
   const { getAll, db } = useIndexedDB('phonebook', 'favorite');
   const { setHeaderContent } = useHeader();
-  const contacts = useReactive<{ list: Contact[]; offset: number }>({
+  const contacts = useReactive<{
+    list: Contact[];
+    offset: number;
+    isFullyLoaded: boolean;
+  }>({
     list: [],
     offset: 0,
+    isFullyLoaded: false,
   });
   const data = useLoaderData() as LoaderData<typeof loader>;
   const [favorites, setFavorites] = useState<Contact[]>([]);
-  // const nexData = useActionData() as LoaderData<typeof action>;
+  const nexData = useActionData() as LoaderData<typeof action>;
   const [clicked, setClicked] = useState(false);
 
-  // let submit = useSubmit();
+  const submit = useSubmit();
 
   const loadMore = async () => {
-    navigate('/', {
-      replace: true,
-      state: { offset: (contacts.offset += 10) },
-    });
+    submit({ offset: (contacts.offset += 10).toString() }, { method: 'patch' });
   };
-  const { loadingRef } = useInfiniteScroll(loadMore);
+  const { loadingRef, isIntersecting } = useInfiniteScroll();
+
+  useEffect(() => {
+    loadMore();
+  }, [isIntersecting]);
 
   const handleClick = () => {
     setClicked(true);
@@ -78,72 +84,90 @@ const ContactList = () => {
         ...contacts.list,
         ...JSON.parse(JSON.stringify(data.data.contact)),
       ];
-      // setTimeout(() => {
-      //   addData(data.data.contact[0]);
-      // }, 3000);
     }
   }, [data.data.contact]);
 
-  // useEffect(() => {
-  //   if (nexData?.data?.contact) {
-  //     vouchers.list = [
-  //       ...vouchers.list,
-  //       ...JSON.parse(JSON.stringify(nexData.data.contact)),
-  //     ];
-  //   }
-  // }, [nexData]);
+  useEffect(() => {
+    if (nexData?.data?.contact) {
+      contacts.list = [
+        ...contacts.list,
+        ...JSON.parse(JSON.stringify(nexData.data.contact)),
+      ];
+    }
+    if (nexData?.data.contact.length < 10) {
+      contacts.isFullyLoaded = true;
+    }
+  }, [nexData]);
 
-  //filtering contacts that is is favorites
+  //filtering contacts that is in favorites
   const favoriteIds = useMemo(() => {
     return new Set(favorites.map((favorite) => favorite.id));
   }, [favorites]);
 
   const filteredContacts = useMemo(() => {
     return contacts.list.filter((contact) => !favoriteIds.has(contact.id));
-  }, [contacts, favoriteIds]);
+  }, [contacts.list, favoriteIds]);
+
+  const isFirstLetter = useCallback(
+    (index: number, item: Contact, previous: Contact) => {
+      if (!previous) return index === 0;
+      return (
+        item.first_name[0].toLowerCase() !==
+        previous.first_name[0].toLowerCase()
+      );
+    },
+    [filteredContacts]
+  );
 
   return (
     <>
       {favorites.length ? (
         <>
-          <h4>Favorites</h4>
           <List>
+            <FirstLetter>
+              <Icon>favorites</Icon>
+            </FirstLetter>
             {favorites.map((c) => (
               <CardContact contact={c} key={c.id} />
             ))}
           </List>
         </>
       ) : null}
-      <h4>Contacts</h4>
       <List>
-        {filteredContacts.map((c) => (
-          <CardContact contact={c} key={c.id} />
-        ))}
-      </List>
+        {filteredContacts.map((c, i) =>
+          isFirstLetter(i, c, filteredContacts[i - 1]) ? (
+            <FirstLetterWrapper key={c.id}>
+              <FirstLetter>{c.first_name[0].toUpperCase()}</FirstLetter>
+              <CardContact contact={c} />
+            </FirstLetterWrapper>
+          ) : (
+            <CardContact contact={c} key={c.id} />
+          )
+        )}
 
-      {/* {vouchers.offset ? (
-        <div ref={loadingRef}>Loading...</div>
-      ) : (
-        <Button
-          color='nord3'
-          onClick={() => {
-            loadMore();
-          }}
-          ghost
-        >
-          load more
-        </Button>
-      )} */}
-      <Button
-        color='nord3'
-        onClick={() => {
-          loadMore();
-        }}
-        ghost
-        style={{ justifySelf: 'center' }}
-      >
-        load more
-      </Button>
+        {/* {contacts.offset ? (
+          contacts.isFullyLoaded ? null : (
+            <div ref={loadingRef}>
+              Loading... {JSON.stringify(contacts.isFullyLoaded)}
+            </div>
+          )
+        ) : (
+          <Button
+            color='nord3'
+            onClick={() => {
+              loadMore();
+            }}
+            ghost
+          >
+            load more
+          </Button>
+        )} */}
+        {contacts.isFullyLoaded ? null : (
+          <div ref={loadingRef}>
+            Loading... {JSON.stringify(contacts.isFullyLoaded)}
+          </div>
+        )}
+      </List>
       <FloatingButton clicked={clicked} onClick={handleClick}>
         <Icon>add</Icon>
       </FloatingButton>
@@ -151,40 +175,64 @@ const ContactList = () => {
   );
 };
 
-export const loader = (async ({ request }) => {
-  const url = new URL(request.url);
-  const search = new URLSearchParams(url.search);
-  const offset = search.get('offset');
-  console.log(request);
+const List = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-bottom: 20px;
+`;
+
+const FirstLetterWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+`;
+
+const FirstLetter = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.large};
+  font-weight: 500;
+  padding-left: 6px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  gap: 8px;
+
+  &::after {
+    content: '';
+    height: 1.5px;
+    width: 100%;
+    background: ${({ theme }) => theme.colors.nord0};
+  }
+`;
+
+export const loader = (async () => {
   const res = await client.query<{ contact: Contact[] }>({
     query: GET_CONTACTS,
     variables: {
       limit: 10,
-      offset: offset || 0,
       order_by: {
         first_name: 'asc', //load a - z by default
       },
     },
   });
-  console.log('loader called', request);
   return res;
 }) satisfies LoaderFunction;
 
-// export const action = (async ({ request }) => {
-//   const form = await request.formData();
-//   const offset = form.get('offset');
-//   const res = await client.query<{ contact: Contact[] }>({
-//     query: GET_CONTACTS,
-//     variables: {
-//       limit: 10,
-//       offset: offset,
-//       order_by: {
-//         first_name: 'asc', //load a - z by default
-//       },
-//     },
-//   });
-//   console.log(`calling on offset ${offset}`, res);
-//   return res;
-// }) satisfies ActionFunction;
+export const action = (async ({ request }) => {
+  const form = await request.formData();
+  const offset = form.get('offset');
+  const res = await client.query<{ contact: Contact[] }>({
+    query: GET_CONTACTS,
+    variables: {
+      limit: 10,
+      offset: offset,
+      order_by: {
+        first_name: 'asc', //load a - z by default
+      },
+    },
+  });
+  return res;
+}) satisfies ActionFunction;
 
 export default ContactList;
