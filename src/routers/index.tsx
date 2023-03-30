@@ -1,6 +1,6 @@
 import { createBrowserRouter, RouteObject } from 'react-router-dom';
 import DefaultLayout from '~/layouts/default';
-import Home, { loader as homeLoader } from '~/pages';
+import Home, { loader as homeLoader, action as homeAction } from '~/pages';
 import ContactDetail, {
   loader as contactDetaiLoader,
 } from '~/pages/:contactId';
@@ -44,6 +44,7 @@ const r = [
         path: '/',
         element: <Home />,
         loader: homeLoader,
+        action: homeAction,
       },
       {
         path: '/:contactId',

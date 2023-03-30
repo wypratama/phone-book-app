@@ -1,13 +1,18 @@
-import { useEffect, useRef } from 'react';
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
+import { SubmitFunction } from 'react-router-dom';
 
-const useInfiniteScroll = (loadMoreFn: { (): Promise<void>; (): void }) => {
+const useInfiniteScroll = () => {
   const loadingRef = useRef(null);
+  const [isIntersecting, setIsIntersecting] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
-          loadMoreFn();
+          setIsIntersecting(true);
+          setTimeout(() => {
+            setIsIntersecting(false);
+          }, 100);
         }
       },
       {
@@ -16,7 +21,6 @@ const useInfiniteScroll = (loadMoreFn: { (): Promise<void>; (): void }) => {
     );
 
     if (loadingRef.current) {
-      console.log('ref set');
       observer.observe(loadingRef.current);
     }
 
@@ -29,6 +33,7 @@ const useInfiniteScroll = (loadMoreFn: { (): Promise<void>; (): void }) => {
 
   return {
     loadingRef,
+    isIntersecting,
   };
 };
 
