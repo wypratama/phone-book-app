@@ -6,6 +6,8 @@ import { Avatar, Button } from '~/components/common';
 import client from '~/configs/graphql';
 import useHeader from '~/hooks/useHeader';
 import {
+  ADD_NUMBER_TO_CONTACT,
+  DELETE_PHONE_BY_PK,
   GET_CONTACT_DETAIL,
   UPDATE_CONTACT_BY_ID,
   UPDATE_NUMBER_BY_CONTACT_ID,
@@ -14,10 +16,6 @@ import { LoaderData } from '~/types/common.type';
 import { Contact } from '~/types/models.interface';
 import useReactive from 'react-use-reactive';
 import { useMutation } from '@apollo/client';
-
-type Props = {
-  contact: Contact;
-};
 
 const Edit = () => {
   const navigate = useNavigate();
@@ -29,6 +27,8 @@ const Edit = () => {
   const [updateContact, { data, loading, error }] =
     useMutation(UPDATE_CONTACT_BY_ID);
   const [updatePhoneNumber] = useMutation(UPDATE_NUMBER_BY_CONTACT_ID);
+  const [addNumberToContact] = useMutation(ADD_NUMBER_TO_CONTACT);
+  const [deleteNumberByPk] = useMutation(DELETE_PHONE_BY_PK);
 
   const onUpdate = async () => {
     try {
@@ -45,17 +45,70 @@ const Edit = () => {
         fetchPolicy: 'no-cache',
       });
 
-      contact.phones.forEach(({ number }, i) => {
-        updatePhoneNumber({
-          variables: {
-            pk_columns: {
-              number: number,
-              contact_id: contact.id,
-            },
-            new_phone_number: input.phones[i].number,
-          },
-        });
-      });
+      // contact.phones.forEach(({ number }, i) => {
+      //   updatePhoneNumber({
+      //     variables: {
+      //       pk_columns: {
+      //         number: number,
+      //         contact_id: contact.id,
+      //       },
+      //       new_phone_number: input.phones[i].number,
+      //     },
+      //   });
+      // });
+
+      //delete number if any
+      console.log('bandingkan', contact.phones, input.phones);
+      // add new number if input array is longer
+      if (input.phones.length > contact.phones.length) {
+        const oldSet = new Set(contact.phones.map((_p, i) => i));
+        const newNumber = input.phones.filter((_p, i) => !oldSet.has(i));
+        console.log('input is longer', newNumber);
+        await Promise.all(
+          newNumber.map(async ({ number }) => {
+            await addNumberToContact({
+              variables: {
+                contact_id: contact.id,
+                phone_number: number,
+              },
+            });
+          })
+        );
+      } else if (input.phones.length < contact.phones.length) {
+        //delete some if new input has shorter length
+        const newSet = new Set(input.phones.map((_p, i) => i));
+        const toRemove = contact.phones.filter((_p, i) => !newSet.has(i));
+        await Promise.all(
+          toRemove.map(async ({ number }) => {
+            await deleteNumberByPk({
+              variables: {
+                id: contact.id,
+                number: number,
+              },
+            });
+          })
+        );
+      }
+
+      //call updates only on number that already exist
+      await Promise.all(
+        contact.phones.map(async ({ number }, i) => {
+          // if old index is present at new input ,
+          // and old value on index is not equal new, then update
+          if (input.phones[i] && +number !== +input.phones[i].number) {
+            await updatePhoneNumber({
+              variables: {
+                pk_columns: {
+                  number: number,
+                  contact_id: contact.id,
+                },
+                new_phone_number: input.phones[i].number,
+              },
+            });
+          }
+        })
+      );
+
       console.log(data);
       navigate(-1);
     } catch (error) {}
@@ -71,6 +124,8 @@ const Edit = () => {
       </Header>
     );
   }, []);
+
+  if (loading) return <div>saving data...</div>;
 
   return (
     <FormContainer>
