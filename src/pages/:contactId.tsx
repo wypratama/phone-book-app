@@ -29,6 +29,7 @@ const ContactDetail = () => {
       await set(contact.id, contact);
       setIsFavorit(true);
     }
+    navigate('/');
   };
 
   const onEditContact = () => {

@@ -1,5 +1,4 @@
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
-import { SubmitFunction } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
 
 const useInfiniteScroll = () => {
   const loadingRef = useRef(null);
