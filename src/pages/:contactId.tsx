@@ -1,22 +1,35 @@
 import { useMutation } from '@apollo/client';
 import styled from '@emotion/styled';
-import { useLayoutEffect } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { LoaderFunction, useLoaderData, useNavigate } from 'react-router-dom';
 import { BottomNav, Icon, Input } from '~/components/common';
 import Avatar from '~/components/common/Avatar';
 import client from '~/configs/graphql';
 import useHeader from '~/hooks/useHeader';
+import useIndexedDB from '~/hooks/useIndexedDb';
 import { DELETE_CONTACT_BY_ID, GET_CONTACT_DETAIL } from '~/services';
 import { LoaderData } from '~/types/common.type';
 import { Contact } from '~/types/models.interface';
 
 const ContactDetail = () => {
+  const { get, set, deleteItem, db } = useIndexedDB('phonebook', 'favorite');
   const navigate = useNavigate();
   const { setHeaderContent } = useHeader();
   const {
     data: { contact_by_pk: contact },
   } = useLoaderData() as LoaderData<typeof loader>;
+  const [isFavorit, setIsFavorit] = useState(false);
   const [deleteContact] = useMutation(DELETE_CONTACT_BY_ID);
+
+  const onClickFavorit = async () => {
+    if (isFavorit) {
+      deleteItem(contact.id);
+      setIsFavorit(false);
+    } else {
+      await set(contact.id, contact);
+      setIsFavorit(true);
+    }
+  };
 
   const onEditContact = () => {
     navigate(`/edit/${contact.id}`);
@@ -31,6 +44,15 @@ const ContactDetail = () => {
     navigate('/');
   };
 
+  useEffect(() => {
+    if (db) {
+      get(contact.id).then((x) => {
+        console.log('dari get', x);
+        if (x) setIsFavorit(true);
+      });
+    }
+  }, [db]);
+
   useLayoutEffect(() => {
     setHeaderContent(
       <Header>
@@ -44,9 +66,6 @@ const ContactDetail = () => {
 
   return (
     <div>
-      <h2>
-        {contact.first_name} {contact.last_name}
-      </h2>
       {contact.phones.map(({ number }) => (
         <Input
           name={number}
@@ -57,9 +76,9 @@ const ContactDetail = () => {
         />
       ))}
       <BottomNav>
-        <IconText>
-          <Icon>favorite_border</Icon>
-          <span>Favorite</span>
+        <IconText onClick={onClickFavorit}>
+          <Icon>{isFavorit ? 'favorite' : 'favorite_border'}</Icon>
+          <span>{isFavorit ? 'Unfavorite' : 'Favorite'}</span>
         </IconText>
         <IconText onClick={onEditContact}>
           <Icon>edit</Icon>

@@ -1,64 +1,49 @@
 import { useState, useEffect } from 'react';
+import {
+  initDB,
+  getRecord,
+  setRecord,
+  deleteRecord,
+  getAllRecords,
+} from '~/configs/indexedDb';
 
 const useIndexedDB = (dbName: string, storeName: string) => {
-  const [db, setDb] = useState(null);
-  const [isReady, setIsReady] = useState(false);
+  const [db, setDb] = useState<IDBDatabase | null>(null);
 
   useEffect(() => {
-    const openRequest = indexedDB.open(dbName);
-
-    openRequest.onupgradeneeded = (event) => {
-      const db = event.target.result;
-      db.createObjectStore(storeName, { keyPath: 'id' });
-    };
-
-    openRequest.onsuccess = (event: Event) => {
-      const db = event.target?.result;
-      setIsReady(true);
-      console.log(db);
-      setDb(db);
-    };
-
-    openRequest.onerror = (event) => {
-      console.error('Error opening IndexedDB:', event.target.error);
-    };
+    (async () => {
+      try {
+        const database = await initDB({ dbName, storeName });
+        setDb(database);
+      } catch (error) {
+        console.error('Error initializing IndexedDB:', error);
+      }
+    })();
   }, [dbName, storeName]);
 
-  const addData = async (data) => {
-    return new Promise((resolve, reject) => {
-      console.log(data, db);
-      const transaction = db.transaction([storeName], 'readwrite');
-      const store = transaction.objectStore(storeName);
-      const request = store.add(data);
-
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    });
+  const get = async (key: string | number) => {
+    if (!db) throw new Error('IndexedDB not initialized');
+    return await getRecord(db, storeName, key);
   };
 
-  const getData = async (id) => {
-    return new Promise((resolve, reject) => {
-      const transaction = db.transaction([storeName], 'readonly');
-      const store = transaction.objectStore(storeName);
-      const request = store.get(id);
-
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    });
+  const set = async <T>(key: string | number, value: T) => {
+    if (!db) throw new Error('IndexedDB not initialized');
+    await setRecord(db, storeName, key, value);
+    return true;
   };
 
-  const deleteData = async (id: any) => {
-    return new Promise((resolve, reject) => {
-      const transaction = db.transaction([storeName], 'readwrite');
-      const store = transaction.objectStore(storeName);
-      const request = store.delete(id);
-
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    });
+  const deleteItem = async (key: string | number) => {
+    if (!db) throw new Error('IndexedDB not initialized');
+    await deleteRecord(db, storeName, key);
+    return true;
   };
 
-  return { addData, getData, deleteData, isReady };
+  const getAll = async () => {
+    if (!db) throw new Error('IndexedDB not initialized');
+    return await getAllRecords(db, storeName);
+  };
+
+  return { get, set, deleteItem, getAll, db };
 };
 
 export default useIndexedDB;

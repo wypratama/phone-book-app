@@ -2,8 +2,10 @@ import { Outlet } from 'react-router-dom';
 import Container from '~/components/common/Container';
 import styled from '@emotion/styled';
 import useHeader from '~/hooks/useHeader';
+import useIndexedDB from '~/hooks/useIndexedDb';
 
 const LayoutDefault = () => {
+  // const { add } = useIndexedDB('phonebook', 'favorite');
   const { headerContent: Header } = useHeader();
   return (
     <BaseLayout>

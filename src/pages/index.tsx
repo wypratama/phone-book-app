@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import client from '~/configs/graphql';
 import {
   LoaderFunction,
@@ -27,13 +27,14 @@ const List = styled.div`
 
 const ContactList = () => {
   const navigate = useNavigate();
-  // const { addData, isReady: isDbReady } = useIndexedDB('phoneBook', 'contacts');
+  const { getAll, db } = useIndexedDB('phonebook', 'favorite');
   const { setHeaderContent } = useHeader();
-  const vouchers = useReactive<{ list: Contact[]; offset: number }>({
+  const contacts = useReactive<{ list: Contact[]; offset: number }>({
     list: [],
     offset: 0,
   });
   const data = useLoaderData() as LoaderData<typeof loader>;
+  const [favorites, setFavorites] = useState<Contact[]>([]);
   // const nexData = useActionData() as LoaderData<typeof action>;
   const [clicked, setClicked] = useState(false);
 
@@ -42,7 +43,7 @@ const ContactList = () => {
   const loadMore = async () => {
     navigate('/', {
       replace: true,
-      state: { offset: (vouchers.offset += 10) },
+      state: { offset: (contacts.offset += 10) },
     });
   };
   const { loadingRef } = useInfiniteScroll(loadMore);
@@ -59,17 +60,22 @@ const ContactList = () => {
     setHeaderContent(<SearchInput />);
   }, []);
 
-  // useEffect(() => {
-  //   if (isDbReady) {
-  //     console.log('called');
-  //     addData(data.data.contact);
-  //   }
-  // }, [isDbReady]);
+  useEffect(() => {
+    if (db) {
+      getAll().then((x) => {
+        const stored = x as Contact[];
+        console.log('dari list favorit', x);
+        if (stored.length) {
+          setFavorites(stored);
+        }
+      });
+    }
+  }, [db]);
 
   useEffect(() => {
     if (data?.data?.contact) {
-      vouchers.list = [
-        ...vouchers.list,
+      contacts.list = [
+        ...contacts.list,
         ...JSON.parse(JSON.stringify(data.data.contact)),
       ];
       // setTimeout(() => {
@@ -87,10 +93,30 @@ const ContactList = () => {
   //   }
   // }, [nexData]);
 
+  //filtering contacts that is is favorites
+  const favoriteIds = useMemo(() => {
+    return new Set(favorites.map((favorite) => favorite.id));
+  }, [favorites]);
+
+  const filteredContacts = useMemo(() => {
+    return contacts.list.filter((contact) => !favoriteIds.has(contact.id));
+  }, [contacts, favoriteIds]);
+
   return (
     <>
+      {favorites.length ? (
+        <>
+          <h4>Favorites</h4>
+          <List>
+            {favorites.map((c) => (
+              <CardContact contact={c} key={c.id} />
+            ))}
+          </List>
+        </>
+      ) : null}
+      <h4>Contacts</h4>
       <List>
-        {vouchers.list.map((c) => (
+        {filteredContacts.map((c) => (
           <CardContact contact={c} key={c.id} />
         ))}
       </List>
