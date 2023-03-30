@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: npm i -g pnpm
-      - run: pnpm install  # Add this step to install dependencies
+      - run: pnpm install --no-frozen-lockfile  # Add this step to install dependencies
       - run: pnpm run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:

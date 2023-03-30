@@ -60,12 +60,37 @@ export const UPDATE_NUMBER_BY_CONTACT_ID = gql`
   }
 `;
 
+export const ADD_NUMBER_TO_CONTACT = gql`
+  mutation AddNumberToContact($contact_id: Int!, $phone_number: String!) {
+    insert_phone(objects: { contact_id: $contact_id, number: $phone_number }) {
+      returning {
+        contact {
+          id
+          last_name
+          first_name
+          phones {
+            number
+          }
+        }
+      }
+    }
+  }
+`;
+
 export const DELETE_CONTACT_BY_ID = gql`
   mutation DeleteContactById($id: Int!) {
     delete_contact_by_pk(id: $id) {
       first_name
       last_name
       id
+    }
+  }
+`;
+
+export const DELETE_PHONE_BY_PK = gql`
+  mutation DeletePhoneByPK($id: Int!, $number: String!) {
+    delete_phone_by_pk(contact_id: $id, number: $number) {
+      number
     }
   }
 `;
