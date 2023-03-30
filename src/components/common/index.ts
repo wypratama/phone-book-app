@@ -6,3 +6,4 @@ export { default as FloatingButton } from './FloatingButton';
 export { default as Input } from './Input';
 export { default as BottomNav } from './BottomNav';
 export { default as Icon } from './Icon';
+export { default as BackButton } from './BackButton';

@@ -14,6 +14,7 @@ const StyledSearch = styled.input`
   ${({ theme }) => `
     width: 100%;
     padding:${theme.spacing.base} ${theme.spacing.base};
+    padding-left: 40px;
     border-radius: ${theme.borderRadius.large};
     outline: none;
     border: none;
@@ -28,7 +29,8 @@ const SearchWrapper = styled.div`
 
 const SearchIcon = styled(Icon)`
   position: absolute;
-  top: 0;
+  top: 12px;
+  left: 12px;
 `;
 
 const SearchInput = () => {

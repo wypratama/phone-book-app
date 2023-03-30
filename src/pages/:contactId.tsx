@@ -2,7 +2,7 @@ import { useMutation } from '@apollo/client';
 import styled from '@emotion/styled';
 import { useEffect, useLayoutEffect, useState } from 'react';
 import { LoaderFunction, useLoaderData, useNavigate } from 'react-router-dom';
-import { BottomNav, Icon, Input } from '~/components/common';
+import { BackButton, BottomNav, Icon, Input } from '~/components/common';
 import Avatar from '~/components/common/Avatar';
 import client from '~/configs/graphql';
 import useHeader from '~/hooks/useHeader';
@@ -61,21 +61,29 @@ const ContactDetail = () => {
         <h2>
           {contact.first_name} {contact.last_name}
         </h2>
+        <IconBack
+          onClick={() => {
+            navigate(-1);
+          }}
+        >
+          arrow_back_ios
+        </IconBack>
       </Header>
     );
   }, []);
 
   return (
-    <div>
-      {contact.phones.map(({ number }) => (
+    <Space>
+      {contact.phones.map(({ number }, i) => (
         <Input
           name={number}
           value={number}
-          label='Phone Number:'
+          label={i ? `Additional Number ${i}` : 'Phone Number:'}
           readOnly
           key={number}
         />
       ))}
+      <Spacer />
       <BottomNav>
         <IconText onClick={onClickFavorit}>
           <Icon>{isFavorit ? 'favorite' : 'favorite_border'}</Icon>
@@ -90,9 +98,15 @@ const ContactDetail = () => {
           <span>Delete</span>
         </IconText>
       </BottomNav>
-    </div>
+    </Space>
   );
 };
+
+const Space = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.base};
+`;
 
 const Header = styled.div`
   display: flex;
@@ -108,6 +122,15 @@ const IconText = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+`;
+
+const IconBack = styled(BackButton)`
+  left: ${({ theme }) => theme.spacing.large};
+  top: ${({ theme }) => theme.spacing.large};
+`;
+
+const Spacer = styled.div`
+  margin-bottom: 120px;
 `;
 
 export const loader = (async ({ params, request }) => {

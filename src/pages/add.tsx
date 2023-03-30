@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import { useLayoutEffect } from 'react';
 import UserForm from '~/components/UserForm';
-import { Button } from '~/components/common';
+import { BackButton, Button } from '~/components/common';
 import useHeader from '~/hooks/useHeader';
 import useReactive from 'react-use-reactive';
 import { useMutation } from '@apollo/client';
@@ -36,6 +36,13 @@ const Add = () => {
     setHeaderContent(
       <Header>
         <h1>Add Contact</h1>
+        <BackButton
+          onClick={() => {
+            navigate(-1);
+          }}
+        >
+          arrow_back_ios
+        </BackButton>
       </Header>
     );
   }, []);
@@ -70,9 +77,11 @@ const FormFooter = styled.div`
   display: flex;
   flex-direction: row;
   gap: ${({ theme }) => theme.spacing.small};
+  margin-bottom: ${({ theme }) => theme.spacing.large};
 `;
 
 const Header = styled.div`
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
