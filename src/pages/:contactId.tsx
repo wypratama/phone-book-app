@@ -139,7 +139,6 @@ export const loader = (async ({ params, request }) => {
     variables: {
       id: params.contactId,
     },
-    // fetchPolicy: 'network-only',
   });
   return res;
 }) satisfies LoaderFunction;

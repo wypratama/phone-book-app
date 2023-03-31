@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://phone-book-20d4a.web.app",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

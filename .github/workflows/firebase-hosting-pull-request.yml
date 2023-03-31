@@ -3,15 +3,16 @@
 
 name: Deploy to Firebase Hosting on PR
 'on': pull_request
-env:
-  VITE_API_BASE_URL: '${{ vars.VITE_API_BASE_URL }}'
 jobs:
   build_and_preview:
+    env:
+      VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
     if: '${{ github.event.pull_request.head.repo.full_name == github.repository }}'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - run: npm i -g pnpm
+      - run: echo $VITE_API_BASE_URL
       - run: pnpm install --no-frozen-lockfile  # Add this step to install dependencies
       - run: pnpm run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
