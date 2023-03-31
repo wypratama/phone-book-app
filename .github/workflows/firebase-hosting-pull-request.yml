@@ -12,7 +12,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: npm i -g pnpm
-      - run: echo $VITE_API_BASE_URL
       - run: pnpm install --no-frozen-lockfile  # Add this step to install dependencies
       - run: pnpm run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
