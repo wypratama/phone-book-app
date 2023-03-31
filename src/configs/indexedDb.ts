@@ -33,7 +33,6 @@ const getRecord = (
     const request = store.get(key);
 
     request.onsuccess = (event) => {
-      console.log(event);
       // rome-ignore lint/suspicious/noExplicitAny: <explanation>
       resolve((event.target as any).result?.value);
     };
@@ -56,7 +55,6 @@ const setRecord = <T>(
     const request = store.put({ key, value });
 
     request.onsuccess = () => {
-      console.log('succes set');
       resolve(true);
     };
 
@@ -77,7 +75,6 @@ const deleteRecord = (
     const request = store.delete(key);
 
     request.onsuccess = () => {
-      console.log('success deleting item');
       resolve(true);
     };
 

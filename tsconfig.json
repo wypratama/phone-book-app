@@ -16,7 +16,7 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "jsxImportSource": "@emotion/react",
-    "types": ["vite/client", "vite-plugin-svgr/client"],
+    "types": ["vite/client", "vite-plugin-svgr/client", "vitest/globals", "@types/jest", "@types/testing-library__jest-dom"],
     "baseUrl": ".",
     "paths": {
       "~/*": ["src/*"],
