@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 
+// rome-ignore lint/suspicious/noExplicitAny: <explanation>
 const useClickAway = (ref: any, callback: Function) => {
   const handleClickAway = (event: Event) => {
     if (ref.current && !ref.current.contains(event.target)) {

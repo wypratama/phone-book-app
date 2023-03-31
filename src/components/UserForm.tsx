@@ -18,6 +18,8 @@ const UserForm = ({ data }: Props) => {
         label='First Name'
         value={data.first_name}
         onChange={(e) => (data.first_name = e.target.value)}
+        required
+        pattern='[a-zA-Z0-9\s]+'
       />
       <Input
         name='last_name'

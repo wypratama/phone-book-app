@@ -45,8 +45,6 @@ const Edit = () => {
         fetchPolicy: 'no-cache',
       });
 
-      //delete number if any
-      console.log('bandingkan', contact.phones, input.phones);
       // add new number if input array is longer
       if (input.phones.length > contact.phones.length) {
         const oldSet = new Set(contact.phones.map((_p, i) => i));
@@ -97,7 +95,6 @@ const Edit = () => {
         })
       );
 
-      console.log(data);
       navigate(-1);
     } catch (error) {}
   };
@@ -165,6 +162,7 @@ const Header = styled.div`
   padding: ${({ theme }) => theme.spacing.base};
   color: ${({ theme }) => theme.colors.accent};
   gap: ${({ theme }) => theme.spacing.small};
+  position: relative;
 `;
 
 const IconBack = styled(BackButton)`
