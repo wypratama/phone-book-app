@@ -7,6 +7,7 @@ import useReactive from 'react-use-reactive';
 import { useMutation } from '@apollo/client';
 import { GET_CONTACTS, POST_CONTACT_WITH_PHONE } from '~/services';
 import { useNavigate } from 'react-router-dom';
+import useForm from '~/hooks/useForm';
 
 const Add = () => {
   const navigate = useNavigate();
@@ -18,17 +19,52 @@ const Add = () => {
     phones: [{ number: '' }],
   });
 
+  const validations = {
+    first_name: {
+      required: {
+        validator: (value: string) => value.length > 0,
+        message: 'first name is required',
+      },
+      alphanumeric: {
+        validator: (value: string) => /^[a-zA-Z0-9 ]*$/.test(value),
+        message: 'first name can only be alphanumeric',
+      },
+    },
+    last_name: {
+      required: {
+        validator: (value: string) => value.length > 0,
+        message: 'first name is required',
+      },
+      alphanumeric: {
+        validator: (value: string) => /^[a-zA-Z0-9 ]*$/.test(value),
+        message: 'first name can only be alphanumeric',
+      },
+    },
+  };
+
+  const form = useForm(
+    {
+      first_name: '',
+      last_name: '',
+    },
+    validations
+  );
+
   const onSaveContact = async () => {
     try {
-      await addContact({
-        variables: data,
-        refetchQueries: [
-          {
-            query: GET_CONTACTS,
-          },
-        ],
-      });
-      navigate('/');
+      const isValid = await form.validate();
+
+      if (isValid) {
+        await addContact({
+          variables: data,
+          refetchQueries: [
+            {
+              query: GET_CONTACTS,
+            },
+          ],
+        });
+        navigate('/');
+      }
     } catch (error) {}
   };
 
@@ -49,7 +85,7 @@ const Add = () => {
   if (loading) return <div>saving data...</div>;
   return (
     <FormContainer>
-      <UserForm data={data} />
+      <UserForm validator={form} data={data} />
       <FormFooter>
         <Button
           color='secondary'
