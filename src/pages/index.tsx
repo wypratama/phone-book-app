@@ -70,7 +70,6 @@ const ContactList = () => {
     if (db) {
       getAll().then((x) => {
         const stored = x as Contact[];
-        console.log('dari list favorit', x);
         if (stored.length) {
           setFavorites(stored);
         }
@@ -145,23 +144,6 @@ const ContactList = () => {
           )
         )}
 
-        {/* {contacts.offset ? (
-          contacts.isFullyLoaded ? null : (
-            <div ref={loadingRef}>
-              Loading... {JSON.stringify(contacts.isFullyLoaded)}
-            </div>
-          )
-        ) : (
-          <Button
-            color='nord3'
-            onClick={() => {
-              loadMore();
-            }}
-            ghost
-          >
-            load more
-          </Button>
-        )} */}
         {contacts.isFullyLoaded ? null : (
           <div ref={loadingRef}>
             Loading... {JSON.stringify(contacts.isFullyLoaded)}
