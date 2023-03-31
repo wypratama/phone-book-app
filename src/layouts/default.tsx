@@ -1,17 +1,21 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigation } from 'react-router-dom';
 import Container from '~/components/common/Container';
 import styled from '@emotion/styled';
 import useHeader from '~/hooks/useHeader';
-import useIndexedDB from '~/hooks/useIndexedDb';
 
 const LayoutDefault = () => {
+  const navigation = useNavigation();
   const { headerContent: Header } = useHeader();
+
+  console.log(navigation.state);
+  // if (navigation.state !== 'idle')
+  //   return <div>this generic text means something is loading</div>;
   return (
     <BaseLayout>
       <Container>
         <LayoutHeader>{Header}</LayoutHeader>
       </Container>
-      <div
+      <Container
         css={(theme) => ({
           background: theme.colors.background,
           width: '100%',
@@ -24,7 +28,7 @@ const LayoutDefault = () => {
       >
         <Outlet />
         <div style={{ height: '16px' }}> </div>
-      </div>
+      </Container>
     </BaseLayout>
   );
 };
@@ -33,7 +37,7 @@ const BaseLayout = styled.div`
   ${(props) => `
   display: flex;
   flex-direction: column;
-  width: 100%;
+  min-width: 100%;
   height: 100svh;
   background: ${props.theme.colors.nord0};
   `}
