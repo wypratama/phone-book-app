@@ -38,6 +38,7 @@ import EditContact, {
 const r = [
   {
     element: <DefaultLayout />,
+    errorElement: <div>Uh oh we forget to handle error oi!</div>,
     // children: routes,
     children: [
       {

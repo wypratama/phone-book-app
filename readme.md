@@ -28,7 +28,11 @@ pnpm run dev
 
 ### Project Takeaway
 
-My main goals on working this project is not only to fill the requirements but also learn something new. I initially deciding to use meta-framework like next or remix. But with recent development of react team deprecating create-next-app, I want to look once again into the more client centerd fetching framework so I decided to use vite for this app. I'm also using react-router-dom and it's loading and action function. At a first glance it look like something that can help client rendered app with problems like FTTB and page flasing on redirect. So i decided to give it a try on this project in favor of the more well rounded approach of using apollo react's hook for fetching.
+My primary objective in working on this project is not only to fulfill the requirements, but also to learn and expand my skills. Initially, I had considered using a meta-framework such as Next or Remix. However, due to the recent development of the React team deprecating create-next-app, I decided to re-evaluate and explore more client-centered fetching frameworks. After careful consideration, I opted to use Vite for this app, along with React Router DOM and its loading and action function.
+
+Upon closer inspection, I believe that this approach can help address common client-rendered app issues, such as FTTB and page flashing on redirect. While I acknowledge the benefits of using Apollo React's hook for fetching, I felt that, for a simple project like this one, where there are not many static assets to load and not much external data to call, the difference would be difficult to notice.
+
+Overall, I recognize that there is still much room for improvement in this project, and I welcome any feedback or input that can help me enhance my skills and knowledge.
 
 ### Attribution
 
