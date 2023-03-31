@@ -86,6 +86,7 @@ const Header = styled.div`
   justify-content: center;
   align-items: center;
   padding: ${({ theme }) => theme.spacing.base};
+  position: relative;
 `;
 
 export default Add;

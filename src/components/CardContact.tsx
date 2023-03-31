@@ -34,6 +34,13 @@ const Card = styled.div`
   justify-content: center;
   align-items: center;
   column-gap: 8px;
+  cursor: pointer;
+  padding: 8px;
+
+  :hover {
+    background: ${({ theme }) => theme.colors.nord5};
+    color: ${({ theme }) => theme.colors.nord8};
+  }
 
   & > div {
     grid-row: span 2;

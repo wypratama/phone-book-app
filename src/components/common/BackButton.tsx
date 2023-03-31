@@ -5,6 +5,7 @@ const BackButton = styled(Icon)`
   position: absolute;
   left: 4px;
   color: ${({ theme }) => theme.colors.accent};
+  cursor: pointer;
 `;
 
 export default BackButton;

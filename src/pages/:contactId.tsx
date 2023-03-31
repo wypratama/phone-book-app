@@ -116,6 +116,7 @@ const Header = styled.div`
   padding: ${({ theme }) => theme.spacing.base};
   color: ${({ theme }) => theme.colors.accent};
   gap: ${({ theme }) => theme.spacing.small};
+  position: relative;
 `;
 
 const IconText = styled.div`

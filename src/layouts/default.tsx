@@ -4,26 +4,25 @@ import styled from '@emotion/styled';
 import useHeader from '~/hooks/useHeader';
 
 const LayoutDefault = () => {
-  const navigation = useNavigation();
   const { headerContent: Header } = useHeader();
 
-  console.log(navigation.state);
-  // if (navigation.state !== 'idle')
-  //   return <div>this generic text means something is loading</div>;
   return (
     <BaseLayout>
-      <Container>
+      <Container size='sm'>
         <LayoutHeader>{Header}</LayoutHeader>
       </Container>
       <Container
+        size='sm'
         css={(theme) => ({
           background: theme.colors.background,
+          flex: 1,
           width: '100%',
           height: '100%',
           borderRadius: '10px 10px 0 0',
           padding: '16px',
           display: 'flex',
           flexDirection: 'column',
+          position: 'relative',
         })}
       >
         <Outlet />
@@ -38,7 +37,7 @@ const BaseLayout = styled.div`
   display: flex;
   flex-direction: column;
   min-width: 100%;
-  height: 100svh;
+  min-height: 100svh;
   background: ${props.theme.colors.nord0};
   `}
 `;

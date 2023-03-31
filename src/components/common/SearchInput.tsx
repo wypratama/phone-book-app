@@ -55,6 +55,7 @@ const ResultContainer = styled.div`
   flex-direction: column;
   max-height: 200px;
   overflow: auto;
+  z-index: 200;
 `;
 
 const SearchInput = () => {
@@ -77,7 +78,6 @@ const SearchInput = () => {
 
   const onSeachKeyPress = async (e: { key: string }) => {
     await searchContact();
-    // }
   };
 
   return (
@@ -96,17 +96,17 @@ const SearchInput = () => {
           }}
         />
         <SearchIcon>search</SearchIcon>
-        {isShow ? (
+        {search ? (
           <ResultContainer ref={resultRef}>
             <p>results:</p>
-            {!data || !search ? (
-              <p>tidak ada hasil pencarian</p>
-            ) : (
+            {data ? (
               data.contact.map((c: Contact) => (
                 <Link to={`/${c.id}`}>
                   {c.first_name} {c.last_name}
                 </Link>
               ))
+            ) : (
+              <p>tidak ada hasil pencarian</p>
             )}
           </ResultContainer>
         ) : null}
