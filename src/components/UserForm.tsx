@@ -4,9 +4,11 @@ import styled from '@emotion/styled';
 
 type Props = {
   data: Contact | Omit<Contact, 'created_at' | 'id'>;
+  // rome-ignore lint/suspicious/noExplicitAny: <explanation>
+  validator: any;
 };
 
-const UserForm = ({ data }: Props) => {
+const UserForm = ({ data, validator }: Props) => {
   const onAddNumber = () => {
     data.phones.push({ number: '' });
   };
@@ -17,15 +19,29 @@ const UserForm = ({ data }: Props) => {
         name='fist_name'
         label='First Name'
         value={data.first_name}
-        onChange={(e) => (data.first_name = e.target.value)}
-        required
-        pattern='[a-zA-Z0-9\s]+'
+        onChange={(e) => (
+          (data.first_name = e.target.value),
+          (validator.value.first_name = e.target.value)
+        )}
+        error={
+          validator?.errors.first_name.length
+            ? validator?.errors.first_name[0].message
+            : undefined
+        }
       />
       <Input
         name='last_name'
         label='Last Name'
         value={data.last_name}
-        onChange={(e) => (data.last_name = e.target.value)}
+        onChange={(e) => (
+          (data.last_name = e.target.value),
+          (validator.value.last_name = e.target.value)
+        )}
+        error={
+          validator?.errors.last_name.length
+            ? validator?.errors.last_name[0].message
+            : undefined
+        }
       />
 
       {data.phones.map((phone, key) => (
@@ -36,20 +52,23 @@ const UserForm = ({ data }: Props) => {
             label={key ? `Additional Phone Number ${key}` : 'Phone Number'}
             value={phone.number}
             onChange={(e) => (phone.number = e.target.value)}
+            type='number'
+            icon={
+              <Button
+                type='button'
+                color='nord1'
+                onClick={() => {
+                  if (data.phones.length > 1) {
+                    data.phones.splice(key, 1);
+                  } else {
+                    alert('need to have at least one number');
+                  }
+                }}
+              >
+                <Icon>remove</Icon>
+              </Button>
+            }
           />
-          <Button
-            type='button'
-            color='nord1'
-            onClick={() => {
-              if (data.phones.length > 1) {
-                data.phones.splice(key, 1);
-              } else {
-                alert('need to have at least one number');
-              }
-            }}
-          >
-            <Icon>remove</Icon>
-          </Button>
         </PhoneWrapper>
       ))}
 

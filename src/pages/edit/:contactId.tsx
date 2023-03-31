@@ -16,6 +16,7 @@ import { LoaderData } from '~/types/common.type';
 import { Contact } from '~/types/models.interface';
 import useReactive from 'react-use-reactive';
 import { useMutation } from '@apollo/client';
+import useForm from '~/hooks/useForm';
 
 const Edit = () => {
   const navigate = useNavigate();
@@ -30,72 +31,106 @@ const Edit = () => {
   const [addNumberToContact] = useMutation(ADD_NUMBER_TO_CONTACT);
   const [deleteNumberByPk] = useMutation(DELETE_PHONE_BY_PK);
 
+  const validations = {
+    first_name: {
+      required: {
+        validator: (value: string) => value.length > 0,
+        message: 'first name is required',
+      },
+      alphanumeric: {
+        validator: (value: string) => /^[a-zA-Z0-9 ]*$/.test(value),
+        message: 'first name can only be alphanumeric',
+      },
+    },
+    last_name: {
+      required: {
+        validator: (value: string) => value.length > 0,
+        message: 'first name is required',
+      },
+      alphanumeric: {
+        validator: (value: string) => /^[a-zA-Z0-9 ]*$/.test(value),
+        message: 'first name can only be alphanumeric',
+      },
+    },
+  };
+
+  const form = useForm(
+    {
+      first_name: '',
+      last_name: '',
+    },
+    validations
+  );
+
   const onUpdate = async () => {
     try {
-      await updateContact({
-        variables: {
-          id: input.id,
-          _set: {
-            first_name: input.first_name,
-            last_name: input.last_name,
+      const isValid = await form.validate();
+      if (isValid) {
+        await updateContact({
+          variables: {
+            id: input.id,
+            _set: {
+              first_name: input.first_name,
+              last_name: input.last_name,
+            },
           },
-        },
 
-        refetchQueries: ['GetContactDetail'],
-        fetchPolicy: 'no-cache',
-      });
+          refetchQueries: ['GetContactDetail'],
+          fetchPolicy: 'no-cache',
+        });
 
-      // add new number if input array is longer
-      if (input.phones.length > contact.phones.length) {
-        const oldSet = new Set(contact.phones.map((_p, i) => i));
-        const newNumber = input.phones.filter((_p, i) => !oldSet.has(i));
-        console.log('input is longer', newNumber);
-        await Promise.all(
-          newNumber.map(async ({ number }) => {
-            await addNumberToContact({
-              variables: {
-                contact_id: contact.id,
-                phone_number: number,
-              },
-            });
-          })
-        );
-      } else if (input.phones.length < contact.phones.length) {
-        //delete some if new input has shorter length
-        const newSet = new Set(input.phones.map((_p, i) => i));
-        const toRemove = contact.phones.filter((_p, i) => !newSet.has(i));
-        await Promise.all(
-          toRemove.map(async ({ number }) => {
-            await deleteNumberByPk({
-              variables: {
-                id: contact.id,
-                number: number,
-              },
-            });
-          })
-        );
-      }
-
-      //call updates only on number that already exist
-      await Promise.all(
-        contact.phones.map(async ({ number }, i) => {
-          // if old index is present at new input ,
-          // and old value on index is not equal new, then update
-          if (input.phones[i] && +number !== +input.phones[i].number) {
-            await updatePhoneNumber({
-              variables: {
-                pk_columns: {
-                  number: number,
+        // add new number if input array is longer
+        if (input.phones.length > contact.phones.length) {
+          const oldSet = new Set(contact.phones.map((_p, i) => i));
+          const newNumber = input.phones.filter((_p, i) => !oldSet.has(i));
+          console.log('input is longer', newNumber);
+          await Promise.all(
+            newNumber.map(async ({ number }) => {
+              await addNumberToContact({
+                variables: {
                   contact_id: contact.id,
+                  phone_number: number,
                 },
-                new_phone_number: input.phones[i].number,
-              },
-            });
-          }
-        })
-      );
+              });
+            })
+          );
+        } else if (input.phones.length < contact.phones.length) {
+          //delete some if new input has shorter length
+          const newSet = new Set(input.phones.map((_p, i) => i));
+          const toRemove = contact.phones.filter((_p, i) => !newSet.has(i));
+          await Promise.all(
+            toRemove.map(async ({ number }) => {
+              await deleteNumberByPk({
+                variables: {
+                  id: contact.id,
+                  number: number,
+                },
+              });
+            })
+          );
+        }
 
-      navigate(-1);
+        //call updates only on number that already exist
+        await Promise.all(
+          contact.phones.map(async ({ number }, i) => {
+            // if old index is present at new input ,
+            // and old value on index is not equal new, then update
+            if (input.phones[i] && +number !== +input.phones[i].number) {
+              await updatePhoneNumber({
+                variables: {
+                  pk_columns: {
+                    number: number,
+                    contact_id: contact.id,
+                  },
+                  new_phone_number: input.phones[i].number,
+                },
+              });
+            }
+          })
+        );
+
+        navigate(-1);
+      }
     } catch (error) {}
   };
 
@@ -121,7 +156,7 @@ const Edit = () => {
 
   return (
     <FormContainer>
-      <UserForm data={input} />
+      <UserForm validator={form} data={input} />
       <FormFooter>
         <Button
           color='secondary'

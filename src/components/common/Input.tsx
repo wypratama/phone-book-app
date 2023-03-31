@@ -1,11 +1,13 @@
 import styled from '@emotion/styled';
-import { InputHTMLAttributes } from 'react';
+import { InputHTMLAttributes, ReactNode } from 'react';
 
 interface Props extends InputHTMLAttributes<HTMLInputElement> {
   name: string;
+  icon?: ReactNode;
   placeholder?: string;
   label?: string;
   type?: string;
+  error?: string;
 }
 
 const Container = styled.div`
@@ -13,12 +15,14 @@ const Container = styled.div`
   flex-direction: column;
 `;
 
-const StyledInput = styled.input`
+const StyledInput = styled.input<{ error: boolean }>`
   outline: none;
-  border: none;
+  border: ${({ theme, error }) =>
+    error ? `1px ${theme.colors.error} solid` : 'none'};
   padding: ${({ theme }) => theme.spacing.base};
   border-radius: ${({ theme }) => theme.borderRadius.small};
   background: ${({ theme }) => theme.colors.nord4};
+  width: 100%;
 `;
 
 const Label = styled.label`
@@ -26,8 +30,23 @@ const Label = styled.label`
   font-weight: 500;
 `;
 
+const FlexInput = styled.div`
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  gap: ${({ theme }) => theme.spacing.base};
+`;
+
+const ErrorMessage = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.small};
+  color: ${({ theme }) => theme.colors.error};
+  padding-top: 2px;
+`;
+
 const Input = ({
   name,
+  icon,
+  error,
   placeholder = '',
   label = '',
   type = 'text',
@@ -36,7 +55,18 @@ const Input = ({
   return (
     <Container>
       <Label htmlFor={name}>{label}</Label>
-      <StyledInput id={name} name={name} placeholder={placeholder} {...props} />
+      <FlexInput>
+        <StyledInput
+          id={name}
+          name={name}
+          error={!!error}
+          placeholder={placeholder}
+          type={type}
+          {...props}
+        />
+        {icon ? icon : null}
+      </FlexInput>
+      {!!error && <ErrorMessage>{error}</ErrorMessage>}
     </Container>
   );
 };
